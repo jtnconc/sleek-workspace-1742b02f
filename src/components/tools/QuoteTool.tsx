@@ -373,15 +373,20 @@ const toggleItem = (itemId: string) => {
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 lg:flex-row">
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 pr-1">
-        <AnimatePresence initial={false} mode="wait">
+      <motion.div
+        layout
+        transition={{ type: "spring", stiffness: 400, damping: 32 }}
+        className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 pr-1"
+      >
+        <AnimatePresence initial={false} mode="popLayout">
           {!showPreview ? (
             <motion.div
               key="quote-form"
+              layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
+              transition={{ type: "spring", stiffness: 400, damping: 32 }}
               className="min-h-0 flex-1 overflow-y-auto"
             >
         <article className="min-w-0 rounded-2xl border border-border bg-surface p-4 sm:p-6">
