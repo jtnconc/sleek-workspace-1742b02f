@@ -206,6 +206,9 @@ export interface QuoteLineItem {
   /** "room" (default) is a standard accommodation row; "other" is a free-text
    * service row (e.g. catering) with an open description instead of a room type. */
   kind?: "room" | "other";
+  /** Only meaningful for kind === "other". "perNight" (default) multiplies by
+   * nights like room rows; "flat" charges the rate once regardless of nights. */
+  billingMode?: "perNight" | "flat";
   quantity: number;
   /** Room type for "room" rows; free-text description for "other" rows. */
   roomType: string;
