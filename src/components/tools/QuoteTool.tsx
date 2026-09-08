@@ -692,9 +692,24 @@ const toggleItem = (itemId: string) => {
                             )}
                           />
                         </div>
-                        <span className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground tabular-nums">
-                          {nights} {lang === "es" ? (nights === 1 ? "noche" : "noches") : nights === 1 ? "night" : "nights"}
-                        </span>
+                        <label className="flex shrink-0 items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground">
+                          <input
+                            type="number"
+                            min={1}
+                            value={nights}
+                            onFocus={(event) => event.currentTarget.select()}
+                            onChange={(event) => {
+                              const n = Math.max(1, Number(event.target.value) || 1);
+                              const arrival = item.arrival || quote.arrival;
+                              const departureDate = new Date(`${arrival}T00:00:00`);
+                              departureDate.setDate(departureDate.getDate() + n);
+                              setItemDates(item.id, { arrival, departure: localISODate(departureDate) });
+                            }}
+                            aria-label={lang === "es" ? "Noches" : "Nights"}
+                            className="number-input-clean w-8 bg-transparent text-center tabular-nums"
+                          />
+                          {lang === "es" ? (nights === 1 ? "noche" : "noches") : nights === 1 ? "night" : "nights"}
+                        </label>
                       </div>
 
                       <div className="flex flex-wrap items-end gap-3 border-t border-border/70 pt-2.5">
