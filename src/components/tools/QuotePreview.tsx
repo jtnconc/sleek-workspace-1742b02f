@@ -12,7 +12,7 @@ import type { HotelTemplate, QuoteDoc } from "@/workspace/types";
 interface QuotePreviewProps {
   quote: QuoteDoc;
   hotel: HotelTemplate;
-  logo?: string;
+  logo?: string | undefined;
 }
 
 /**
