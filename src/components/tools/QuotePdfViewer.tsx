@@ -1,0 +1,65 @@
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
+interface QuotePdfViewerProps {
+  /** Blob URL of the generated quotation PDF. */
+  url: string;
+}
+
+/**
+ * Renders the real generated PDF as canvases inside a plain div (pdf.js), so the
+ * preview is pixel-accurate but free of the browser's native PDF viewer chrome.
+ */
+export function QuotePdfViewer({ url }: QuotePdfViewerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+  const [numPages, setNumPages] = useState(0);
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const measure = () => setWidth(el.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    setNumPages(0);
+  }, [url]);
+
+  return (
+    <div ref={containerRef} className="w-full">
+      <Document
+        file={url}
+        onLoadSuccess={({ numPages: n }) => setNumPages(n)}
+        loading={
+          <p className="py-8 text-center text-xs text-muted-foreground">Loading preview…</p>
+        }
+        error={
+          <p className="py-8 text-center text-xs text-muted-foreground">
+            Preview unavailable
+          </p>
+        }
+        className="flex flex-col items-center gap-3"
+      >
+        {width > 0 &&
+          Array.from({ length: numPages }, (_, i) => (
+            <Page
+              key={i}
+              pageNumber={i + 1}
+              width={width}
+              renderTextLayer={false}
+              renderAnnotationLayer={false}
+              className="overflow-hidden rounded-xl shadow-sm [&_canvas]:!h-auto [&_canvas]:!w-full"
+            />
+          ))}
+      </Document>
+    </div>
+  );
+}
+
+export default QuotePdfViewer;
