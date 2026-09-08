@@ -124,8 +124,10 @@ export function buildItemDescription(item: QuoteLineItem, quote: QuoteDoc) {
 export const quoteDescription = (quote: QuoteDoc, hotel: HotelTemplate) =>
   quote.descriptionEdited ? quote.description : buildDescription(quote, hotel);
 
-export const lineSubtotal = (item: QuoteLineItem, nights: number) =>
-  +(item.quantity * Math.max(0, nights) * item.ratePerNight).toFixed(2);
+export const lineSubtotal = (item: QuoteLineItem, nights: number) => {
+  const effectiveNights = item.kind === "other" && item.billingMode === "flat" ? 1 : Math.max(0, nights);
+  return +(item.quantity * effectiveNights * item.ratePerNight).toFixed(2);
+};
 
 export function quoteTotals(quote: QuoteDoc) {
   let subtotal = 0;
