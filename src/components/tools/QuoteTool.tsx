@@ -53,6 +53,18 @@ import {
 
 
 
+const PAGE_ASPECT = 11 / 8.5;
+
+function PdfSkeleton() {
+  return (
+    <div
+      className="bg-surface-3 animate-pulse rounded-lg"
+      style={{ width: "100%", paddingBottom: `${Math.round(PAGE_ASPECT * 100)}%` }}
+      aria-label="Loading PDF page"
+    />
+  );
+}
+
 const inputCls =
   "w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-[13px] outline-none transition-colors focus:border-ring";
 const monoInput = cn(inputCls, "tabular-nums");
@@ -373,15 +385,20 @@ const toggleItem = (itemId: string) => {
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 lg:flex-row">
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 pr-1">
-        <AnimatePresence initial={false} mode="wait">
+      <motion.div
+        layout
+        transition={{ type: "spring", stiffness: 400, damping: 32 }}
+        className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 pr-1"
+      >
+        <AnimatePresence initial={false} mode="popLayout">
           {!showPreview ? (
             <motion.div
               key="quote-form"
+              layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
+              transition={{ type: "spring", stiffness: 400, damping: 32 }}
               className="min-h-0 flex-1 overflow-y-auto"
             >
         <article className="min-w-0 rounded-2xl border border-border bg-surface p-4 sm:p-6">
@@ -913,12 +930,13 @@ const toggleItem = (itemId: string) => {
           ) : (
             <motion.button
               key="quote-collapsed"
+              layout
               type="button"
               onClick={() => onClosePreview?.()}
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+              transition={{ type: "spring", stiffness: 400, damping: 32 }}
               className="relative flex shrink-0 items-center justify-center rounded-full bg-surface-2 px-4 py-2.5 text-center transition-colors hover:bg-secondary"
             >
               <span className="label-xs">
@@ -933,33 +951,22 @@ const toggleItem = (itemId: string) => {
           {showPreview && pdfBlobUrl && (
             <motion.div
               key="quote-preview"
+              layout
               initial={{ opacity: 0, scale: 0.985 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.985 }}
-              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+              transition={{ type: "spring", stiffness: 400, damping: 32 }}
               className="min-h-0 flex-1 overflow-auto rounded-2xl border border-border bg-muted/30 p-4"
             >
-              <ClientOnly
-                fallback={
-                  <p className="py-8 text-center text-xs text-muted-foreground">
-                    Loading preview…
-                  </p>
-                }
-              >
-                <Suspense
-                  fallback={
-                    <p className="py-8 text-center text-xs text-muted-foreground">
-                      Loading preview…
-                    </p>
-                  }
-                >
+              <ClientOnly fallback={<PdfSkeleton />}>
+                <Suspense fallback={<PdfSkeleton />}>
                   <QuotePdfViewer url={pdfBlobUrl} />
                 </Suspense>
               </ClientOnly>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       {showHistory && (
         <aside className="max-h-64 w-full shrink-0 overflow-auto border-t border-border pt-4 lg:max-h-none lg:w-64 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">

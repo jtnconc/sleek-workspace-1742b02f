@@ -8,6 +8,18 @@ interface QuotePdfViewerProps {
   url: string;
 }
 
+const PAGE_ASPECT = 11 / 8.5;
+
+function PageSkeleton({ width }: { width: number }) {
+  return (
+    <div
+      className="bg-surface-3 animate-pulse rounded-lg"
+      style={{ width, height: Math.round(width * PAGE_ASPECT) }}
+      aria-label="Loading PDF page"
+    />
+  );
+}
+
 /**
  * Renders the real generated PDF as canvases inside a plain div (pdf.js), so the
  * preview is pixel-accurate but free of the browser's native PDF viewer chrome.
@@ -37,7 +49,15 @@ export function QuotePdfViewer({ url }: QuotePdfViewerProps) {
         file={url}
         onLoadSuccess={({ numPages: n }) => setNumPages(n)}
         loading={
-          <p className="py-8 text-center text-xs text-muted-foreground">Loading preview…</p>
+          width > 0 ? (
+            <PageSkeleton width={width} />
+          ) : (
+            <div
+              className="bg-surface-3 animate-pulse rounded-lg"
+              style={{ width: "100%", paddingBottom: `${Math.round(PAGE_ASPECT * 100)}%` }}
+              aria-label="Loading PDF page"
+            />
+          )
         }
         error={
           <p className="py-8 text-center text-xs text-muted-foreground">
@@ -54,6 +74,7 @@ export function QuotePdfViewer({ url }: QuotePdfViewerProps) {
               width={width}
               renderTextLayer={false}
               renderAnnotationLayer={false}
+              loading={<PageSkeleton width={width} />}
               className="overflow-hidden rounded-xl shadow-sm [&_canvas]:!h-auto [&_canvas]:!w-full"
             />
           ))}
