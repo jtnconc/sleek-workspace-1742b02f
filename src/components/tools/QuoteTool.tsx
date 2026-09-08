@@ -26,7 +26,8 @@ import {
   quoteTotals,
 } from "@/lib/quote-model";
 
-import { generateQuotePdf, quotePdfPreviewUrl } from "@/lib/quote-pdf";
+import { generateQuotePdf } from "@/lib/quote-pdf";
+import { QuotePreview } from "@/components/tools/QuotePreview";
 import { money } from "@/lib/rates";
 import type {
   Accommodation,
@@ -232,10 +233,6 @@ const toggleItem = (itemId: string) => {
   const logo = hotelLogos[quote.hotelId] ?? hotel.logoUrl;
   const description = selectedHotel ? quoteDescription(quote, selectedHotel) : quote.description;
 
-  const previewUrl = useMemo(
-    () => (showPreview && selectedHotel ? quotePdfPreviewUrl(quote, selectedHotel, logo) : null),
-    [showPreview, selectedHotel, quote, logo],
-  );
 
 
   const saveRoomTypes = (types: string[]) => {
@@ -922,20 +919,16 @@ const toggleItem = (itemId: string) => {
         </AnimatePresence>
 
         <AnimatePresence initial={false}>
-          {showPreview && previewUrl && (
+          {showPreview && selectedHotel && (
             <motion.div
               key="quote-preview"
               initial={{ opacity: 0, scale: 0.985 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.985 }}
               transition={{ type: "spring", stiffness: 420, damping: 34 }}
-              className="min-h-0 flex-1 overflow-hidden rounded-2xl border border-border"
+              className="min-h-0 flex-1 overflow-auto rounded-2xl border border-border bg-muted/30 p-4"
             >
-              <iframe
-                src={previewUrl}
-                title="Quotation preview"
-                className="h-full w-full"
-              />
+              <QuotePreview quote={quote} hotel={selectedHotel} logo={logo} />
             </motion.div>
           )}
         </AnimatePresence>
