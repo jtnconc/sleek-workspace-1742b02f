@@ -751,6 +751,30 @@ const toggleItem = (itemId: string) => {
                             />
                           </span>
                         </label>
+                        {item.kind === "other" && (
+                          <label className="flex shrink-0 flex-col gap-1">
+                            <span className="label-xs">{lang === "es" ? "Cobro" : "Billing"}</span>
+                            <div className="flex items-center gap-0.5 rounded-full border border-border p-0.5">
+                              {(["perNight", "flat"] as const).map((mode) => (
+                                <button
+                                  key={mode}
+                                  type="button"
+                                  onClick={() => patchItem(item.id, { billingMode: mode })}
+                                  className={cn(
+                                    "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
+                                    (item.billingMode ?? "perNight") === mode
+                                      ? "bg-primary text-primary-foreground"
+                                      : "text-muted-foreground hover:text-foreground",
+                                  )}
+                                >
+                                  {mode === "perNight"
+                                    ? lang === "es" ? "Por noche" : "Per night"
+                                    : lang === "es" ? "Monto total" : "Flat amount"}
+                                </button>
+                              ))}
+                            </div>
+                          </label>
+                        )}
                         <div className="ml-auto flex shrink-0 flex-col items-end gap-1">
                           <span className="label-xs">{L.subtotal}</span>
                           <span className="flex h-8 items-center tabular-nums text-[14px] font-semibold">
