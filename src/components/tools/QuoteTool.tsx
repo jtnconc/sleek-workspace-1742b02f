@@ -946,20 +946,8 @@ const toggleItem = (itemId: string) => {
               transition={{ type: "spring", stiffness: 400, damping: 32 }}
               className="min-h-0 flex-1 overflow-auto rounded-2xl border border-border bg-muted/30 p-4"
             >
-              <ClientOnly
-                fallback={
-                  <p className="py-8 text-center text-xs text-muted-foreground">
-                    Loading preview…
-                  </p>
-                }
-              >
-                <Suspense
-                  fallback={
-                    <p className="py-8 text-center text-xs text-muted-foreground">
-                      Loading preview…
-                    </p>
-                  }
-                >
+              <ClientOnly fallback={<PdfSkeleton />}>
+                <Suspense fallback={<PdfSkeleton />}>
                   <QuotePdfViewer url={pdfBlobUrl} />
                 </Suspense>
               </ClientOnly>
