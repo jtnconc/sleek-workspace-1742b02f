@@ -53,6 +53,18 @@ import {
 
 
 
+const PAGE_ASPECT = 11 / 8.5;
+
+function PdfSkeleton() {
+  return (
+    <div
+      className="bg-surface-3 animate-pulse rounded-lg"
+      style={{ width: "100%", paddingBottom: `${Math.round(PAGE_ASPECT * 100)}%` }}
+      aria-label="Loading PDF page"
+    />
+  );
+}
+
 const inputCls =
   "w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-[13px] outline-none transition-colors focus:border-ring";
 const monoInput = cn(inputCls, "tabular-nums");
