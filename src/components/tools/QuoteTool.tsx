@@ -918,12 +918,13 @@ const toggleItem = (itemId: string) => {
           ) : (
             <motion.button
               key="quote-collapsed"
+              layout
               type="button"
               onClick={() => onClosePreview?.()}
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+              transition={{ type: "spring", stiffness: 400, damping: 32 }}
               className="relative flex shrink-0 items-center justify-center rounded-full bg-surface-2 px-4 py-2.5 text-center transition-colors hover:bg-secondary"
             >
               <span className="label-xs">
