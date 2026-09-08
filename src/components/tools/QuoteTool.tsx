@@ -714,7 +714,11 @@ const toggleItem = (itemId: string) => {
 
                       <div className="flex flex-wrap items-end gap-3 border-t border-border/70 pt-2.5">
                         <label className="flex min-w-[9rem] flex-1 flex-col gap-1 sm:max-w-44">
-                          <span className="label-xs">{L.rate}</span>
+                          <span className="label-xs">
+                            {item.kind === "other" && item.billingMode === "flat"
+                              ? lang === "es" ? "Monto" : "Amount"
+                              : L.rate}
+                          </span>
                           <div className="relative">
                             <span className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-[12px] text-muted-foreground">$</span>
                             <input
