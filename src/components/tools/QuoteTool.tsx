@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
+import { ClientOnly } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Check,
@@ -26,8 +27,11 @@ import {
   quoteTotals,
 } from "@/lib/quote-model";
 
-import { generateQuotePdf } from "@/lib/quote-pdf";
-import { QuotePreview } from "@/components/tools/QuotePreview";
+import { generateQuotePdf, quotePdfPreviewUrl } from "@/lib/quote-pdf";
+
+const QuotePdfViewer = lazy(() =>
+  import("@/components/tools/QuotePdfViewer").then((m) => ({ default: m.QuotePdfViewer })),
+);
 import { money } from "@/lib/rates";
 import type {
   Accommodation,
@@ -204,6 +208,7 @@ const [historyQuery, setHistoryQuery] = useState("");
 /** History quote id currently awaiting a second tap to confirm deletion. */
 const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
 
+
 const filteredHistory = useMemo(() => {
   const q = historyQuery.trim().toLowerCase();
   if (!q) return quoteHistory;
@@ -232,6 +237,12 @@ const toggleItem = (itemId: string) => {
 
   const logo = hotelLogos[quote.hotelId] ?? hotel.logoUrl;
   const description = selectedHotel ? quoteDescription(quote, selectedHotel) : quote.description;
+
+  /** Blob URL of the real generated PDF, rendered inline by pdf.js. */
+  const pdfBlobUrl = useMemo(
+    () => (showPreview && selectedHotel ? quotePdfPreviewUrl(quote, selectedHotel, logo) : null),
+    [showPreview, selectedHotel, quote, logo],
+  );
 
 
 
@@ -919,7 +930,7 @@ const toggleItem = (itemId: string) => {
         </AnimatePresence>
 
         <AnimatePresence initial={false}>
-          {showPreview && selectedHotel && (
+          {showPreview && pdfBlobUrl && (
             <motion.div
               key="quote-preview"
               initial={{ opacity: 0, scale: 0.985 }}
@@ -928,7 +939,23 @@ const toggleItem = (itemId: string) => {
               transition={{ type: "spring", stiffness: 420, damping: 34 }}
               className="min-h-0 flex-1 overflow-auto rounded-2xl border border-border bg-muted/30 p-4"
             >
-              <QuotePreview quote={quote} hotel={selectedHotel} logo={logo} />
+              <ClientOnly
+                fallback={
+                  <p className="py-8 text-center text-xs text-muted-foreground">
+                    Loading preview…
+                  </p>
+                }
+              >
+                <Suspense
+                  fallback={
+                    <p className="py-8 text-center text-xs text-muted-foreground">
+                      Loading preview…
+                    </p>
+                  }
+                >
+                  <QuotePdfViewer url={pdfBlobUrl} />
+                </Suspense>
+              </ClientOnly>
             </motion.div>
           )}
         </AnimatePresence>
