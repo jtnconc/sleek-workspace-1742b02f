@@ -238,6 +238,12 @@ const toggleItem = (itemId: string) => {
   const logo = hotelLogos[quote.hotelId] ?? hotel.logoUrl;
   const description = selectedHotel ? quoteDescription(quote, selectedHotel) : quote.description;
 
+  /** Blob URL of the real generated PDF, rendered inline by pdf.js. */
+  const pdfBlobUrl = useMemo(
+    () => (showPreview && selectedHotel ? quotePdfPreviewUrl(quote, selectedHotel, logo) : null),
+    [showPreview, selectedHotel, quote, logo],
+  );
+
 
 
   const saveRoomTypes = (types: string[]) => {
