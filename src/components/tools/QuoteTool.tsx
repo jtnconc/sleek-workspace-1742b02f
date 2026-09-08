@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
+import { ClientOnly } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Check,
@@ -26,8 +27,11 @@ import {
   quoteTotals,
 } from "@/lib/quote-model";
 
-import { generateQuotePdf } from "@/lib/quote-pdf";
-import { QuotePreview } from "@/components/tools/QuotePreview";
+import { generateQuotePdf, quotePdfPreviewUrl } from "@/lib/quote-pdf";
+
+const QuotePdfViewer = lazy(() =>
+  import("@/components/tools/QuotePdfViewer").then((m) => ({ default: m.QuotePdfViewer })),
+);
 import { money } from "@/lib/rates";
 import type {
   Accommodation,
