@@ -49,7 +49,15 @@ export function QuotePdfViewer({ url }: QuotePdfViewerProps) {
         file={url}
         onLoadSuccess={({ numPages: n }) => setNumPages(n)}
         loading={
-          <p className="py-8 text-center text-xs text-muted-foreground">Loading preview…</p>
+          width > 0 ? (
+            <PageSkeleton width={width} />
+          ) : (
+            <div
+              className="bg-surface-3 animate-pulse rounded-lg"
+              style={{ width: "100%", paddingBottom: `${Math.round(PAGE_ASPECT * 100)}%` }}
+              aria-label="Loading PDF page"
+            />
+          )
         }
         error={
           <p className="py-8 text-center text-xs text-muted-foreground">
