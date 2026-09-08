@@ -939,10 +939,11 @@ const toggleItem = (itemId: string) => {
           {showPreview && pdfBlobUrl && (
             <motion.div
               key="quote-preview"
+              layout
               initial={{ opacity: 0, scale: 0.985 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.985 }}
-              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+              transition={{ type: "spring", stiffness: 400, damping: 32 }}
               className="min-h-0 flex-1 overflow-auto rounded-2xl border border-border bg-muted/30 p-4"
             >
               <ClientOnly
@@ -965,7 +966,7 @@ const toggleItem = (itemId: string) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       {showHistory && (
         <aside className="max-h-64 w-full shrink-0 overflow-auto border-t border-border pt-4 lg:max-h-none lg:w-64 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
