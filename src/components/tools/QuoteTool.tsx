@@ -208,11 +208,6 @@ const [historyQuery, setHistoryQuery] = useState("");
 /** History quote id currently awaiting a second tap to confirm deletion. */
 const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
 
-/** Blob URL of the real generated PDF, rendered inline by pdf.js. */
-const pdfBlobUrl = useMemo(
-  () => (showPreview && selectedHotel ? quotePdfPreviewUrl(quote, selectedHotel, logo) : null),
-  [showPreview, selectedHotel, quote, logo],
-);
 
 const filteredHistory = useMemo(() => {
   const q = historyQuery.trim().toLowerCase();
