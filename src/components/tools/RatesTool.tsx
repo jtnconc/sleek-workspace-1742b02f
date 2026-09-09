@@ -159,9 +159,7 @@ export function RatesTool() {
           className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-2"
         >
           <span className="flex flex-wrap items-center gap-2">
-            <span className="label-xs">
-              View daily ({result.nightCount} nights)
-            </span>
+            <span className="label-xs">View daily</span>
             {!showBreakdown &&
               groupedRates.map((g) => {
                 const isWeekday = g.label.includes("Lun-Jue");
@@ -169,13 +167,25 @@ export function RatesTool() {
                   <span
                     key={g.label}
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-tight",
+                      "inline-flex items-center gap-1.5 rounded-full py-1 pl-2.5 pr-1 text-[11px] font-semibold",
                       isWeekday
                         ? "bg-badge-weekday-bg text-badge-weekday-text"
                         : "bg-badge-weekend-bg text-badge-weekend-text",
                     )}
                   >
-                    {g.label} · {g.count}n avg {money(g.avg)}
+                    <span className="uppercase tracking-tight">{g.label}</span>
+                    <span className="flex items-center gap-0.5">
+                      <Moon className="size-3" />
+                      {g.count}
+                    </span>
+                    <span
+                      className={cn(
+                        "rounded-full px-2 py-0.5 tabular-nums text-white",
+                        isWeekday ? "bg-badge-weekday-text" : "bg-badge-weekend-text",
+                      )}
+                    >
+                      {money(g.avg)}
+                    </span>
                   </span>
                 );
               })}
