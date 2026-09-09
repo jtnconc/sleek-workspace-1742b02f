@@ -125,7 +125,9 @@ export function SettingsPanel() {
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
+                    restoreNotesSelection();
                     setActiveFont(f.value);
+                    setNotesBaseFontFamily(f.value);
                     applyNotesFontFamily(f.value);
                   }}
                   className="flex w-full items-center gap-2 bg-surface px-2.5 py-2 text-left transition-colors hover:bg-secondary"
