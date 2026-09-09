@@ -13,8 +13,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import {
   applyNotesFontFamily,
   applyNotesFontSize,
+  getNotesFontFamily,
   getNotesFontSize,
   isNotesSelectionActive,
+  restoreNotesSelection,
+  saveNotesSelection,
+  setNotesBaseFontFamily,
+  getNotesBaseFontFamily,
   setNotesBaseFontSize,
   getNotesBaseFontSize,
   DEFAULT_NOTES_FONT_SIZE,
@@ -51,14 +56,27 @@ const MIN_FONT_SIZE = 8;
 const MAX_FONT_SIZE = 96;
 const DEFAULT_FONT_SIZE = DEFAULT_NOTES_FONT_SIZE;
 
+/** Matches a computed font-family string back to one of the FONTS presets. */
+function matchFont(computed: string | null): string | null {
+  if (!computed) return null;
+  const lower = computed.toLowerCase();
+  for (const f of FONTS) {
+    const primary = f.value.split(",")[0]!.trim().replace(/^['"]|['"]$/g, "").toLowerCase();
+    if (primary && lower.includes(primary)) return f.value;
+  }
+  return null;
+}
+
 export function SettingsPanel() {
-  const [activeFont, setActiveFont] = useState(FONTS[0]?.value ?? "");
+  const [activeFont, setActiveFont] = useState(() => getNotesBaseFontFamily());
   const [fontSize, setFontSize] = useState(() => getNotesBaseFontSize());
   const [sizeInput, setSizeInput] = useState(() => String(getNotesBaseFontSize()));
 
   useEffect(() => {
     const sync = () => {
       if (isNotesSelectionActive()) setFontSize(getNotesFontSize() ?? DEFAULT_FONT_SIZE);
+      const fam = isNotesSelectionActive() ? getNotesFontFamily() : null;
+      setActiveFont(matchFont(fam) ?? getNotesBaseFontFamily());
     };
     sync();
     document.addEventListener("selectionchange", sync);
@@ -83,7 +101,10 @@ export function SettingsPanel() {
           type="button"
           title="Settings"
           aria-label="Settings"
-          onMouseDown={(e) => e.preventDefault()}
+          onMouseDown={(e) => {
+            saveNotesSelection();
+            e.preventDefault();
+          }}
           className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-muted-foreground shadow-desk transition-colors hover:bg-secondary hover:text-foreground"
         >
           <Settings className="size-[17px]" />
@@ -104,7 +125,9 @@ export function SettingsPanel() {
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
+                    restoreNotesSelection();
                     setActiveFont(f.value);
+                    setNotesBaseFontFamily(f.value);
                     applyNotesFontFamily(f.value);
                   }}
                   className="flex w-full items-center gap-2 bg-surface px-2.5 py-2 text-left transition-colors hover:bg-secondary"

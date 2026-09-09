@@ -9,9 +9,29 @@ export const DEFAULT_NOTES_FONT_SIZE = 16;
 let baseFontSize: number = DEFAULT_NOTES_FONT_SIZE;
 const baseFontSizeListeners = new Set<(px: number) => void>();
 
+/** Base font family configured in Settings, persisted so it survives reloads. */
+export const DEFAULT_NOTES_FONT_FAMILY =
+  "Inter, ui-sans-serif, system-ui, sans-serif";
+const FONT_FAMILY_STORAGE_KEY = "notes-font-family";
+let baseFontFamily: string = (() => {
+  if (typeof window === "undefined") return DEFAULT_NOTES_FONT_FAMILY;
+  try {
+    return (
+      window.localStorage.getItem(FONT_FAMILY_STORAGE_KEY) ??
+      DEFAULT_NOTES_FONT_FAMILY
+    );
+  } catch {
+    return DEFAULT_NOTES_FONT_FAMILY;
+  }
+})();
+const baseFontFamilyListeners = new Set<(family: string) => void>();
+
 export function registerNotesEditor(el: HTMLElement | null) {
   editor = el;
-  if (el) el.style.fontSize = `${baseFontSize}px`;
+  if (el) {
+    el.style.fontSize = `${baseFontSize}px`;
+    el.style.fontFamily = baseFontFamily;
+  }
 }
 
 /** Subscribe to Settings font-size changes (used by the editor itself). */
@@ -36,6 +56,54 @@ export function setNotesBaseFontSize(px: number) {
 
 export function getNotesBaseFontSize(): number {
   return baseFontSize;
+}
+
+/** Subscribe to Settings font-family changes (used by the editor itself). */
+export function subscribeNotesBaseFontFamily(cb: (family: string) => void) {
+  baseFontFamilyListeners.add(cb);
+  return () => {
+    baseFontFamilyListeners.delete(cb);
+  };
+}
+
+/**
+ * Sets the editor-wide font family (Settings). Applied to the contentEditable
+ * root like the base font size, and persisted to localStorage so the choice
+ * survives a reload. Per-character family spans still win over this.
+ */
+export function setNotesBaseFontFamily(family: string) {
+  baseFontFamily = family;
+  if (editor) editor.style.fontFamily = family;
+  try {
+    window.localStorage.setItem(FONT_FAMILY_STORAGE_KEY, family);
+  } catch {
+    /* ignore */
+  }
+  baseFontFamilyListeners.forEach((cb) => cb(family));
+}
+
+export function getNotesBaseFontFamily(): string {
+  return baseFontFamily;
+}
+
+/** Last selection inside the editor, cloned so panels can steal focus safely. */
+let savedRange: Range | null = null;
+
+/** Snapshots the current selection if it sits inside the Notes editor. */
+export function saveNotesSelection() {
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount > 0 && isNotesSelectionActive()) {
+    savedRange = sel.getRangeAt(0).cloneRange();
+  }
+}
+
+/** Restores the snapshot taken by saveNotesSelection, refocusing the editor. */
+export function restoreNotesSelection() {
+  if (!savedRange || !editor) return;
+  editor.focus();
+  const sel = window.getSelection();
+  sel?.removeAllRanges();
+  sel?.addRange(savedRange);
 }
 
 /** Total plain-text length of a node's contents. */
@@ -332,4 +400,15 @@ export function getNotesFontSize(): number | null {
   const size = window.getComputedStyle(el).fontSize;
   const parsed = Number.parseFloat(size);
   return Number.isFinite(parsed) ? Math.round(parsed) : null;
+}
+
+/** Reads the font family at the current caret/selection, if any. */
+export function getNotesFontFamily(): string | null {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || !isNotesSelectionActive()) return null;
+  const node = sel.anchorNode;
+  if (!node) return null;
+  const el = node.nodeType === Node.ELEMENT_NODE ? (node as Element) : node.parentElement;
+  if (!el) return null;
+  return window.getComputedStyle(el).fontFamily || null;
 }
