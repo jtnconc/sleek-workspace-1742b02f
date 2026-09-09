@@ -21,6 +21,7 @@ import {
   formatDate,
   itemNights,
   lineSubtotal,
+  localISODate,
   nightsBetween,
   quoteDescription,
   quoteNumber,
@@ -691,14 +692,33 @@ const toggleItem = (itemId: string) => {
                             )}
                           />
                         </div>
-                        <span className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground tabular-nums">
-                          {nights} {lang === "es" ? (nights === 1 ? "noche" : "noches") : nights === 1 ? "night" : "nights"}
-                        </span>
+                        <label className="flex shrink-0 items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground">
+                          <input
+                            type="number"
+                            min={1}
+                            value={nights}
+                            onFocus={(event) => event.currentTarget.select()}
+                            onChange={(event) => {
+                              const n = Math.max(1, Number(event.target.value) || 1);
+                              const arrival = item.arrival || quote.arrival;
+                              const departureDate = new Date(`${arrival}T00:00:00`);
+                              departureDate.setDate(departureDate.getDate() + n);
+                              setItemDates(item.id, { arrival, departure: localISODate(departureDate) });
+                            }}
+                            aria-label={lang === "es" ? "Noches" : "Nights"}
+                            className="number-input-clean w-8 bg-transparent text-center tabular-nums"
+                          />
+                          {lang === "es" ? (nights === 1 ? "noche" : "noches") : nights === 1 ? "night" : "nights"}
+                        </label>
                       </div>
 
                       <div className="flex flex-wrap items-end gap-3 border-t border-border/70 pt-2.5">
                         <label className="flex min-w-[9rem] flex-1 flex-col gap-1 sm:max-w-44">
-                          <span className="label-xs">{L.rate}</span>
+                          <span className="label-xs">
+                            {item.kind === "other" && item.billingMode === "flat"
+                              ? lang === "es" ? "Monto" : "Amount"
+                              : L.rate}
+                          </span>
                           <div className="relative">
                             <span className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-[12px] text-muted-foreground">$</span>
                             <input
@@ -731,6 +751,30 @@ const toggleItem = (itemId: string) => {
                             />
                           </span>
                         </label>
+                        {item.kind === "other" && (
+                          <label className="flex shrink-0 flex-col gap-1">
+                            <span className="label-xs">{lang === "es" ? "Cobro" : "Billing"}</span>
+                            <div className="flex items-center gap-0.5 rounded-full border border-border p-0.5">
+                              {(["perNight", "flat"] as const).map((mode) => (
+                                <button
+                                  key={mode}
+                                  type="button"
+                                  onClick={() => patchItem(item.id, { billingMode: mode })}
+                                  className={cn(
+                                    "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
+                                    (item.billingMode ?? "perNight") === mode
+                                      ? "bg-primary text-primary-foreground"
+                                      : "text-muted-foreground hover:text-foreground",
+                                  )}
+                                >
+                                  {mode === "perNight"
+                                    ? lang === "es" ? "Por noche" : "Per night"
+                                    : lang === "es" ? "Monto total" : "Flat amount"}
+                                </button>
+                              ))}
+                            </div>
+                          </label>
+                        )}
                         <div className="ml-auto flex shrink-0 flex-col items-end gap-1">
                           <span className="label-xs">{L.subtotal}</span>
                           <span className="flex h-8 items-center tabular-nums text-[14px] font-semibold">
