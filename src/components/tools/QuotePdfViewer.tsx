@@ -34,7 +34,16 @@ export function QuotePdfViewer({ url }: QuotePdfViewerProps) {
     if (!el) return;
     const measure = () => setWidth(el.clientWidth);
     measure();
-    const observer = new ResizeObserver(measure);
+    // Debounce: only re-render the canvas once the container settles at its
+    // final size, instead of at every intermediate width mid-animation.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const observer = new ResizeObserver((entries) => {
+      clearTimeout(timer);
+      const next = entries[0]?.target.clientWidth;
+      timer = setTimeout(() => {
+        if (typeof next === "number") setWidth(next);
+      }, 180);
+    });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
