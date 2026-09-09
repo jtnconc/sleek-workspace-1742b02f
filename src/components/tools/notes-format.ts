@@ -9,9 +9,29 @@ export const DEFAULT_NOTES_FONT_SIZE = 16;
 let baseFontSize: number = DEFAULT_NOTES_FONT_SIZE;
 const baseFontSizeListeners = new Set<(px: number) => void>();
 
+/** Base font family configured in Settings, persisted so it survives reloads. */
+export const DEFAULT_NOTES_FONT_FAMILY =
+  "Inter, ui-sans-serif, system-ui, sans-serif";
+const FONT_FAMILY_STORAGE_KEY = "notes-font-family";
+let baseFontFamily: string = (() => {
+  if (typeof window === "undefined") return DEFAULT_NOTES_FONT_FAMILY;
+  try {
+    return (
+      window.localStorage.getItem(FONT_FAMILY_STORAGE_KEY) ??
+      DEFAULT_NOTES_FONT_FAMILY
+    );
+  } catch {
+    return DEFAULT_NOTES_FONT_FAMILY;
+  }
+})();
+const baseFontFamilyListeners = new Set<(family: string) => void>();
+
 export function registerNotesEditor(el: HTMLElement | null) {
   editor = el;
-  if (el) el.style.fontSize = `${baseFontSize}px`;
+  if (el) {
+    el.style.fontSize = `${baseFontSize}px`;
+    el.style.fontFamily = baseFontFamily;
+  }
 }
 
 /** Subscribe to Settings font-size changes (used by the editor itself). */
