@@ -537,9 +537,11 @@ const toggleItem = (itemId: string) => {
                           {item.accommodation}
                         </span>
                       )}
-                      <span className="shrink-0 rounded-full border border-border bg-white px-2.5 py-0.5 text-[12px] font-medium text-foreground">
-                        {L.guest}: {(item.guestName ?? "").trim() || (lang === "es" ? "Por confirmar" : "Pending")}
-                      </span>
+                      {(item.kind !== "other" || (item.guestName ?? "").trim()) && (
+                        <span className="shrink-0 rounded-full border border-border bg-white px-2.5 py-0.5 text-[12px] font-medium text-foreground">
+                          {L.guest}: {(item.guestName ?? "").trim() || (lang === "es" ? "Por confirmar" : "Pending")}
+                        </span>
+                      )}
                       <span className="shrink-0 rounded-full border border-border bg-white px-2.5 py-0.5 text-[12px] font-medium text-foreground tabular-nums">
                         {formatDate(item.arrival || quote.arrival, lang)} →{" "}
                         {formatDate(item.departure || quote.departure, lang)}
