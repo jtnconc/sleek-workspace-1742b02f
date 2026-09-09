@@ -193,7 +193,8 @@
   letter-spacing: 0.09em;
   text-transform: uppercase;
   font-weight: 600;
-  color: var(--muted-foreground);
+  color: var(--foreground);
+  opacity: 0.65;
 }
 
 /* Number inputs without browser spinner arrows */
