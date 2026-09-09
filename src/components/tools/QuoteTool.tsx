@@ -1066,7 +1066,7 @@ const toggleItem = (itemId: string) => {
                     <p className="mt-1 truncate text-[12.5px] font-semibold">
                       {displayName || (lang === "es" ? "Sin destinatario" : "No recipient")}
                       {q.company.trim() && (
-                        <span className="font-normal text-muted-foreground"> | {q.company}</span>
+                        <span className="font-normal text-foreground/70"> | {q.company}</span>
                       )}
                     </p>
                   );
