@@ -58,6 +58,54 @@ export function getNotesBaseFontSize(): number {
   return baseFontSize;
 }
 
+/** Subscribe to Settings font-family changes (used by the editor itself). */
+export function subscribeNotesBaseFontFamily(cb: (family: string) => void) {
+  baseFontFamilyListeners.add(cb);
+  return () => {
+    baseFontFamilyListeners.delete(cb);
+  };
+}
+
+/**
+ * Sets the editor-wide font family (Settings). Applied to the contentEditable
+ * root like the base font size, and persisted to localStorage so the choice
+ * survives a reload. Per-character family spans still win over this.
+ */
+export function setNotesBaseFontFamily(family: string) {
+  baseFontFamily = family;
+  if (editor) editor.style.fontFamily = family;
+  try {
+    window.localStorage.setItem(FONT_FAMILY_STORAGE_KEY, family);
+  } catch {
+    /* ignore */
+  }
+  baseFontFamilyListeners.forEach((cb) => cb(family));
+}
+
+export function getNotesBaseFontFamily(): string {
+  return baseFontFamily;
+}
+
+/** Last selection inside the editor, cloned so panels can steal focus safely. */
+let savedRange: Range | null = null;
+
+/** Snapshots the current selection if it sits inside the Notes editor. */
+export function saveNotesSelection() {
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount > 0 && isNotesSelectionActive()) {
+    savedRange = sel.getRangeAt(0).cloneRange();
+  }
+}
+
+/** Restores the snapshot taken by saveNotesSelection, refocusing the editor. */
+export function restoreNotesSelection() {
+  if (!savedRange || !editor) return;
+  editor.focus();
+  const sel = window.getSelection();
+  sel?.removeAllRanges();
+  sel?.addRange(savedRange);
+}
+
 /** Total plain-text length of a node's contents. */
 function textLength(node: Node): number {
   return node.textContent?.length ?? 0;
