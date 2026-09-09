@@ -1058,13 +1058,19 @@ const toggleItem = (itemId: string) => {
                   <span className="text-muted-foreground">{formatDateShort(q.issueDate)}</span>
                 </p>
 
-                {/* Line 2: guest (fallback recipient) | company */}
-                <p className="mt-1 truncate text-[12.5px] font-semibold">
-                  {(q.guest || q.recipient).trim() || (lang === "es" ? "Sin destinatario" : "No recipient")}
-                  {q.company.trim() && (
-                    <span className="font-normal text-muted-foreground"> | {q.company}</span>
-                  )}
-                </p>
+                {/* Line 2: first room item guest name (fallback recipient) | company */}
+                {(() => {
+                  const itemGuest = q.items.find((item) => item.guestName?.trim())?.guestName?.trim();
+                  const displayName = itemGuest || q.recipient.trim();
+                  return (
+                    <p className="mt-1 truncate text-[12.5px] font-semibold">
+                      {displayName || (lang === "es" ? "Sin destinatario" : "No recipient")}
+                      {q.company.trim() && (
+                        <span className="font-normal text-muted-foreground"> | {q.company}</span>
+                      )}
+                    </p>
+                  );
+                })()}
 
                 {/* Line 3: amount (hotel accent) + quote code (muted) */}
                 <p
