@@ -1006,7 +1006,7 @@ const toggleItem = (itemId: string) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
       {showHistory && (
         <aside className="max-h-64 w-full shrink-0 overflow-auto border-t border-border pt-4 lg:max-h-none lg:w-64 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
