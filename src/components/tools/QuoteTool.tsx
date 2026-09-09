@@ -1040,10 +1040,8 @@ const toggleItem = (itemId: string) => {
           <ul className="space-y-2">
             {filteredHistory.map((q) => (
               <li key={q.id + q.updatedAt} className="rounded-xl bg-surface-2 p-2.5">
-                <p className="tabular-nums text-[10.5px] text-muted-foreground">
-                  {quoteNumber(q)} · {formatDate(q.issueDate, q.language)}
-                </p>
-                <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[12.5px] font-semibold">
+                {/* Line 1: hotel pill + date */}
+                <p className="flex items-center gap-1.5 text-[12.5px]">
                   <span
                     className="shrink-0 truncate rounded-full px-2 py-0.5 text-[10px] font-medium"
                     style={{
@@ -1056,13 +1054,20 @@ const toggleItem = (itemId: string) => {
                       return h.shortName ?? h.name;
                     })()}
                   </span>
-                  <span className="truncate">
-                    {q.company || (lang === "es" ? "Sin empresa" : "No company")}
-                  </span>
+                  <span className="text-muted-foreground">{formatDate(q.issueDate, q.language)}</span>
                 </p>
-                <p className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
-                  {q.recipient || (lang === "es" ? "Sin destinatario" : "No recipient")} |{" "}
-                  <span className="tabular-nums">{money(quoteTotals(q).total)}</span>
+
+                {/* Line 2: guest (fallback recipient) | company */}
+                <p className="mt-1 truncate text-[12.5px] font-semibold">
+                  {(q.guest || q.recipient).trim() || (lang === "es" ? "Sin destinatario" : "No recipient")}
+                  {q.company.trim() && (
+                    <span className="font-normal text-muted-foreground"> | {q.company}</span>
+                  )}
+                </p>
+
+                {/* Line 3: amount + quote code, muted */}
+                <p className="mt-0.5 tabular-nums text-[11px] text-muted-foreground/70">
+                  {money(quoteTotals(q).total)} · {quoteNumber(q)}
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   <button
