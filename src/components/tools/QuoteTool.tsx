@@ -386,11 +386,7 @@ const toggleItem = (itemId: string) => {
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 lg:flex-row">
-      <motion.div
-        layout
-        transition={{ type: "spring", stiffness: 400, damping: 32 }}
-        className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 pr-1"
-      >
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 pr-1">
         <AnimatePresence initial={false} mode="popLayout">
           {!showPreview ? (
             <motion.div
