@@ -401,3 +401,14 @@ export function getNotesFontSize(): number | null {
   const parsed = Number.parseFloat(size);
   return Number.isFinite(parsed) ? Math.round(parsed) : null;
 }
+
+/** Reads the font family at the current caret/selection, if any. */
+export function getNotesFontFamily(): string | null {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || !isNotesSelectionActive()) return null;
+  const node = sel.anchorNode;
+  if (!node) return null;
+  const el = node.nodeType === Node.ELEMENT_NODE ? (node as Element) : node.parentElement;
+  if (!el) return null;
+  return window.getComputedStyle(el).fontFamily || null;
+}
