@@ -19,6 +19,7 @@ import { HOTELS, getHotel } from "@/lib/hotels";
 import {
   QUOTE_LABELS,
   formatDate,
+  formatDateShort,
   itemNights,
   lineSubtotal,
   localISODate,
@@ -1054,7 +1055,7 @@ const toggleItem = (itemId: string) => {
                       return h.shortName ?? h.name;
                     })()}
                   </span>
-                  <span className="text-muted-foreground">{formatDate(q.issueDate, q.language)}</span>
+                  <span className="text-muted-foreground">{formatDateShort(q.issueDate)}</span>
                 </p>
 
                 {/* Line 2: guest (fallback recipient) | company */}
@@ -1065,9 +1066,13 @@ const toggleItem = (itemId: string) => {
                   )}
                 </p>
 
-                {/* Line 3: amount + quote code, muted */}
-                <p className="mt-0.5 tabular-nums text-[11px] text-muted-foreground/70">
-                  {money(quoteTotals(q).total)} · {quoteNumber(q)}
+                {/* Line 3: amount (hotel accent) + quote code (muted) */}
+                <p
+                  className="mt-0.5 tabular-nums text-[11px] font-medium"
+                  style={{ color: getHotel(q.hotelId).accent }}
+                >
+                  {money(quoteTotals(q).total)} ·{" "}
+                  <span className="text-muted-foreground/70">{quoteNumber(q)}</span>
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   <button

@@ -57,6 +57,26 @@ export function formatDate(iso: string, lang: QuoteLanguage = "es") {
 /** Kept for existing callers that always render Spanish dates. */
 export const formatDateES = (iso: string) => formatDate(iso, "es");
 
+const MONTHS_SHORT = [
+  "ENE",
+  "FEB",
+  "MAR",
+  "ABR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AGO",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DIC",
+];
+
+export function formatDateShort(iso: string) {
+  const { y, m, d } = parts(iso);
+  return `${String(d).padStart(2, "0")} ${MONTHS_SHORT[m]} ${y}`;
+}
+
 export function nightsBetween(arrival: string, departure: string) {
   const a = new Date(`${arrival}T00:00:00Z`).getTime();
   const b = new Date(`${departure}T00:00:00Z`).getTime();
