@@ -200,7 +200,9 @@ export function buildQuotePdf(quote: QuoteDoc, hotel: HotelTemplate, logoImage?:
     doc.text(roomLines, cols[3]!.x, vCenter(roomLines));
     doc.setFont("helvetica", "normal").setFontSize(8.5);
     const numY = y + rowH / 2 + 2.5;
-    doc.text(String(item.quantity), cols[2]!.x, numY, { align: "right" });
+    if (item.kind !== "other") {
+      doc.text(String(item.quantity), cols[2]!.x, numY, { align: "right" });
+    }
     doc.text(String(rowNights), cols[4]!.x, numY, { align: "right" });
     doc.text(money(item.ratePerNight), cols[5]!.x, numY, { align: "right" });
     doc.text(money(lineSubtotal(item, rowNights)), cols[6]!.x, numY, { align: "right" });
