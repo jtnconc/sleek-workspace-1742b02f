@@ -19,6 +19,7 @@ import { HOTELS, getHotel } from "@/lib/hotels";
 import {
   QUOTE_LABELS,
   formatDate,
+  formatDateShort,
   itemNights,
   lineSubtotal,
   localISODate,
