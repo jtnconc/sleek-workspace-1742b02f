@@ -13,8 +13,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import {
   applyNotesFontFamily,
   applyNotesFontSize,
+  getNotesFontFamily,
   getNotesFontSize,
   isNotesSelectionActive,
+  restoreNotesSelection,
+  saveNotesSelection,
+  setNotesBaseFontFamily,
+  getNotesBaseFontFamily,
   setNotesBaseFontSize,
   getNotesBaseFontSize,
   DEFAULT_NOTES_FONT_SIZE,
